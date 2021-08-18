@@ -10,21 +10,44 @@ const { createRenderer } = require('vue-server-renderer');
 
 const renderer = createRenderer();
 
+// 导入路由
+const VueRouter = require('vue-router');
+Vue.use(VueRouter);
+
 // 路由：问题2: 由express在管理
-app.get('/', async (req, res) => {
+app.get('*', async (req, res) => {
+  // 创建一个路由器实例
+  const router = new VueRouter({
+    routes: [
+      { path: '/', component: { template: '<div>Index</div>'}},
+      { path: '/detail', component: { template: '<div>detail</div>'}},
+    ]
+  })
+
   // 构建渲染页面内容
   // 问题1: 没办法交互
   // 问题3: 同构开发问题
   const vm = new Vue({
+    router,
     data() {
       return {
         name: '村长真棒'
       }
     },
-    template: '<div>{{name}}</div>'
+    template: `
+    <div>
+      <router-link to='/'>index</router-link>
+      <router-link to='/detail'>detail</router-link>
+      <div>{{name}}</div>
+      <router-view></router-view>
+    </div>
+    `
   })
 
   try {
+    // 路由跳转
+    router.push(req.url);
+
     // 渲染:得到html字符串
     const html = await renderer.renderToString(vm);
     // 发送回前端
