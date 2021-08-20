@@ -14,9 +14,12 @@ module.exports = {
   },
   outputDir: './dist/'+target,
   configureWebpack: () => ({
-    // 将 entry 指向应用程序的 server / client 文件 entry: `./src/entry-${target}.js`,
-    // 对 bundle renderer 提供 source map 支持 devtool: 'source-map',
-    // target设置为node使webpack以Node适用的方式处理动态导入， // 并且还会在编译Vue组件时告知`vue-loader`输出面向服务器代码。 target: TARGET_NODE ? "node" : "web",
+    // 将 entry 指向应用程序的 server / client 文件
+    entry: `./src/entry-${target}.js`,
+    // 对 bundle renderer 提供 source map 支持
+    devtool: 'source-map',
+    // target设置为node使webpack以Node适用的方式处理动态导入， // 并且还会在编译Vue组件时告知`vue-loader`输出面向服务器代码。
+    target: TARGET_NODE ? "node" : "web",
     // 是否模拟node全局变量
     node: TARGET_NODE ? undefined : false,
     output: {
@@ -27,9 +30,10 @@ module.exports = {
     // https://github.com/liady/webpack-node-externals
     // 外置化应用程序依赖模块。可以使服务器构建速度更快，并生成较小的打包文件。
     externals: TARGET_NODE
-          ? nodeExternals({
-    // 不要外置化webpack需要处理的依赖模块。
-    // 可以在这里添加更多的文件类型。例如，未处理 *.vue 原始文件， // 还应该将修改`global`(例如polyfill)的依赖模块列入白名单 whitelist: [/\.css$/]
+      ? nodeExternals({
+          // 不要外置化webpack需要处理的依赖模块。
+          // 可以在这里添加更多的文件类型。例如，未处理 *.vue 原始文件， // 还应该将修改`global`(例如polyfill)的依赖模块列入白名单 
+          allowlist: [/\.css$/]
         })
       : undefined,
     optimization: {
